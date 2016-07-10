@@ -4,80 +4,94 @@
 
 #include "actions.h"
 
-BOOL CALLBACK EnumWindowsProc(HWND, LPARAM);
+BOOL CALLBACK _getwins_callback(HWND, LPARAM);
 
 struct pthread_sendwin_t {
     HWND hwnd;
-    int vk;
+    vk_t *vk;
 };
 void *pthread_sendwin_f(void *param)
 {
     struct pthread_sendwin_t v = *( (struct pthread_sendwin_t *) param );
-    printf("[pthreading]\t hwnd: %d, key: %d\n", v.hwnd, v.vk);
-    if (PostMessage(v.hwnd, WM_KEYDOWN, v.vk, 0))
-        printf("[pthreading]\t returning\n");
-    else 
-        fprintf(stderr, "[pthreading]\t failed.\n");
-    sleep(1);
+    int i;
+    for (i=0; i<MAXVKS; i++) {
+        // printf("[pthreading]\t hwnd: %d, key: %d\n", v.hwnd, v.vk[i].vk);
+        if (v.vk[i].flags == VK_T_DOWN)
+            SendMessage(v.hwnd, WM_KEYDOWN, v.vk[i].vk, 0);
+        else if (v.vk[i].flags == VK_T_UP)
+            SendMessage(v.hwnd, WM_KEYUP, v.vk[i].vk, 0);
+    }
     return NULL;
 }
 
-void sendwin_f(sendwin_t *params)
+void sendwin(sendwin_t *params)
 {
     HWND *h = params->handles;
+
+    if (params->n == 1) {
+        pthread_sendwin_f((struct pthread_sendwin_t []) {*h, (vk_t *) &params->vk});
+        return;
+    }
+
     pthread_t pthreads[MAXHWNDS];
     int i,j;
-    for (i=0; *h && i<MAXHWNDS; i++, h++) {
-        printf("[loop]\t\t HWND: 0x%x\n", *h);
+    for (i=0; *h && i<params->n; i++, h++) {
+        // printf("[loop]\t\t HWND: 0x%x\n", *h);
         if (pthread_create(
                     &pthreads[i], 
                     NULL,
                     pthread_sendwin_f, 
-                    (struct pthread_sendwin_t []) {*h, params->vk} ))
+                    (struct pthread_sendwin_t []) {*h, (vk_t *) &params->vk} ))
             fprintf(stderr, "asd\n");
     }
     for (j=0; j<i; j++) {
-        printf("j: %d, p: %p\n", j, pthreads[j]);
-        fflush(stdout);
+        // printf("j: %d, p: %p\n", j, pthreads[j]);
         pthread_join(pthreads[j],NULL);
     }
 }
 
 void getwins(getwins_t *ret)
 {
-    EnumWindows(EnumWindowsProc, (size_t) ret); 
+    EnumWindows(_getwins_callback, (size_t) ret); 
 }
 
-BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lparam)
+BOOL CALLBACK _getwins_callback(HWND hwnd, LPARAM lparam)
 {
     static char buff[32];
 
     getwins_t *ret = (getwins_t *) lparam;
+
+    if (ret->n == MAXHWNDS)
+        return FALSE; 
     
     GetClassName(hwnd, buff, 32);
-    printf("[getwins][%d] Class: %s\n", ret->n, buff);
-    if (!strncmp(buff, "GxWindowClassD3d", 32)) {
-        if (ret->n == MAXHWNDS)
-            return TRUE;
-        ret->handles[ret->n++];
+    if (!strncmp(buff, "GxWindowClass", sizeof("GxWindowClass")-1)) {
+        // printf("[getwins][%d][h: 0x%x] Class: %s\n", ret->n, hwnd, buff);
+        ret->handles[ret->n++] = hwnd;
     }
 
-    return FALSE;
+    return TRUE;
 }
 
 int main(void)
 {
-    char b[512];
-    HWND hwnd = FindWindow(NULL, "World of Warcraft");
-    GetClassName(hwnd,b,512);
-    sendwin_t st = {
-        .handles = {hwnd, 0},
-        .vk = 0x30
-    }; 
-    sendwin_f(&st);
     getwins_t wins;
     getwins(&wins);
     printf("n wins: %d\n", wins.n);
+    printf("sizeof %d\n", sizeof(sendwin_t));
+    sendwin_t s = {
+        .n = wins.n,
+        .vk = {{VK_T_DOWN, 'M'},{VK_T_UP, 'M'},{VK_T_DOWN, 'M'},{VK_T_UP, 'M'},}
+        // .vk = {{VK_T_DOWN, 'M'},{VK_T_UP, 'M'},{VK_T_DOWN, 'M'},{VK_T_UP, 'M'},{VK_T_DOWN, 'M'},{VK_T_UP, 'M'},{VK_T_DOWN, 'M'},{VK_T_UP, 'M'}}
+    };
+    memcpy(&s.handles, wins.handles, sizeof(s.handles));
+
+    sendwin(&s);
+    sendwin(&s);
+    sendwin(&s);
+    sendwin(&s);
+    sendwin(&s);
+
     // printf("sizeof: %d\n", sizeof(sendwin_t));
     // printf("class: %s\n", b);
     // printf("hwnd: %d\n", st.handles[0]);

@@ -1,14 +1,15 @@
 #include <stdio.h>
 #include <string.h>
+#include <limits.h>
 
 typedef struct {
-    int n;
-    int v[];
+    char a[8];
 } asd;
+
 int main(void)
 {
-    asd a = {1, (int[]) {1,2,3}};
-    printf("sizeof: %d\n", sizeof(a));
-    
+    char a[] = {"asd"};
+    char b[] = a;
+    puts(b);
     return 0;
 }
