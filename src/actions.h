@@ -15,4 +15,9 @@ typedef struct {
     int vk; 
 } sendwin_t;
 
+typedef struct {
+    size_t n;
+    HWND handles[MAXHWNDS];
+} getwins_t;
+
 #endif

@@ -4,6 +4,7 @@
 
 #include "actions.h"
 
+BOOL CALLBACK EnumWindowsProc(HWND, LPARAM);
 
 struct pthread_sendwin_t {
     HWND hwnd;
@@ -42,9 +43,26 @@ void sendwin_f(sendwin_t *params)
     }
 }
 
-void getwins(HWND *handles, size_t sz)
+void getwins(getwins_t *ret)
 {
+    EnumWindows(EnumWindowsProc, (size_t) ret); 
+}
 
+BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lparam)
+{
+    static char buff[32];
+
+    getwins_t *ret = (getwins_t *) lparam;
+    
+    GetClassName(hwnd, buff, 32);
+    printf("[getwins][%d] Class: %s\n", ret->n, buff);
+    if (!strncmp(buff, "GxWindowClassD3d", 32)) {
+        if (ret->n == MAXHWNDS)
+            return TRUE;
+        ret->handles[ret->n++];
+    }
+
+    return FALSE;
 }
 
 int main(void)
@@ -57,6 +75,9 @@ int main(void)
         .vk = 0x30
     }; 
     sendwin_f(&st);
+    getwins_t wins;
+    getwins(&wins);
+    printf("n wins: %d\n", wins.n);
     // printf("sizeof: %d\n", sizeof(sendwin_t));
     // printf("class: %s\n", b);
     // printf("hwnd: %d\n", st.handles[0]);
