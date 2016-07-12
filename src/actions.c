@@ -12,14 +12,22 @@ struct pthread_sendwin_t {
 };
 void *pthread_sendwin_f(void *param)
 {
+    char mask, vk;
     struct pthread_sendwin_t v = *( (struct pthread_sendwin_t *) param );
     int i;
     for (i=0; i<MAXVKS; i++) {
         // printf("[pthreading]\t hwnd: %d, key: %d\n", v.hwnd, v.vk[i].vk);
-        if (v.vk[i].flags == VK_T_DOWN)
-            SendMessage(v.hwnd, WM_KEYDOWN, v.vk[i].vk, 0);
-        else if (v.vk[i].flags == VK_T_UP)
-            SendMessage(v.hwnd, WM_KEYUP, v.vk[i].vk, 0);
+        mask = v.vk[i].mask;
+        vk = v.vk[i].vk;
+
+        if (mask & VK_T_DOWN)
+            SendMessage(v.hwnd, WM_KEYDOWN, vk, 0);
+
+        if (mask & VK_T_CHAR)
+            SendMessage(v.hwnd, WM_CHAR, vk, 0);
+
+        if (mask & VK_T_UP)
+            SendMessage(v.hwnd, WM_KEYUP, vk, 0); 
     }
     return NULL;
 }
@@ -79,9 +87,14 @@ int main(void)
     getwins(&wins);
     printf("n wins: %d\n", wins.n);
     printf("sizeof %d\n", sizeof(sendwin_t));
+    char c = 'K';
     sendwin_t s = {
         .n = wins.n,
+<<<<<<< HEAD
         .vk = {{VK_T_DOWN, 'M'},{VK_T_UP, 'M'},}
+=======
+        .vk = {{7, 'M'}}
+>>>>>>> cbc0f52e7205114990ddb84d8d872e106cce7b49
         // .vk = {{VK_T_DOWN, 'M'},{VK_T_UP, 'M'},{VK_T_DOWN, 'M'},{VK_T_UP, 'M'},{VK_T_DOWN, 'M'},{VK_T_UP, 'M'},{VK_T_DOWN, 'M'},{VK_T_UP, 'M'}}
     };
     memcpy(&s.handles, wins.handles, sizeof(s.handles));
