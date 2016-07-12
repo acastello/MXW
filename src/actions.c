@@ -66,7 +66,7 @@ BOOL CALLBACK _getwins_callback(HWND hwnd, LPARAM lparam)
     
     GetClassName(hwnd, buff, 32);
     if (!strncmp(buff, "GxWindowClass", sizeof("GxWindowClass")-1)) {
-        // printf("[getwins][%d][h: 0x%x] Class: %s\n", ret->n, hwnd, buff);
+        printf("[getwins][%d][h: 0x%x] Class: %s\n", ret->n, hwnd, buff);
         ret->handles[ret->n++] = hwnd;
     }
 
@@ -81,12 +81,13 @@ int main(void)
     printf("sizeof %d\n", sizeof(sendwin_t));
     sendwin_t s = {
         .n = wins.n,
-        .vk = {{VK_T_DOWN, 'M'},{VK_T_UP, 'M'},{VK_T_DOWN, 'M'},{VK_T_UP, 'M'},}
+        .vk = {{VK_T_DOWN, 'M'},{VK_T_UP, 'M'},}
         // .vk = {{VK_T_DOWN, 'M'},{VK_T_UP, 'M'},{VK_T_DOWN, 'M'},{VK_T_UP, 'M'},{VK_T_DOWN, 'M'},{VK_T_UP, 'M'},{VK_T_DOWN, 'M'},{VK_T_UP, 'M'}}
     };
     memcpy(&s.handles, wins.handles, sizeof(s.handles));
 
     sendwin(&s);
+    sleep(1);
     sendwin(&s);
     sendwin(&s);
     sendwin(&s);
