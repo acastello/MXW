@@ -8,8 +8,6 @@ typedef struct {
 
 int main(void)
 {
-    char a[] = {"asd"};
-    char b[] = a;
-    puts(b);
+    printf("%d\n", 1 & 0 | 1 );
     return 0;
 }

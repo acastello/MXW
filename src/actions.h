@@ -13,8 +13,9 @@ typedef enum {
 
 #define VK_T_DOWN 1
 #define VK_T_UP 2
+#define VK_T_CHAR 4
 typedef struct {
-    char flags;
+    char mask;
     char vk;
 } vk_t;
 
