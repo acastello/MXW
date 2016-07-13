@@ -91,10 +91,7 @@ int main(void)
     sendwin_t s = {
         .n = wins.n,
         .vk = {{VK_T_DOWN, 'M'},{VK_T_UP, 'M'},}
-<<<<<<< HEAD
-=======
         // .vk = {{7, 'M'}}
->>>>>>> 6a8e5ff4541a03ed352303cfb78a39ef1b64c1c8
         // .vk = {{VK_T_DOWN, 'M'},{VK_T_UP, 'M'},{VK_T_DOWN, 'M'},{VK_T_UP, 'M'},{VK_T_DOWN, 'M'},{VK_T_UP, 'M'},{VK_T_DOWN, 'M'},{VK_T_UP, 'M'}}
     };
     memcpy(&s.handles, wins.handles, sizeof(s.handles));
