@@ -90,11 +90,8 @@ int main(void)
     char c = 'K';
     sendwin_t s = {
         .n = wins.n,
-<<<<<<< HEAD
         .vk = {{VK_T_DOWN, 'M'},{VK_T_UP, 'M'},}
-=======
-        .vk = {{7, 'M'}}
->>>>>>> cbc0f52e7205114990ddb84d8d872e106cce7b49
+        // .vk = {{7, 'M'}}
         // .vk = {{VK_T_DOWN, 'M'},{VK_T_UP, 'M'},{VK_T_DOWN, 'M'},{VK_T_UP, 'M'},{VK_T_DOWN, 'M'},{VK_T_UP, 'M'},{VK_T_DOWN, 'M'},{VK_T_UP, 'M'}}
     };
     memcpy(&s.handles, wins.handles, sizeof(s.handles));

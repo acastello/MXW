@@ -1,5 +1,5 @@
 CC=winegcc
-CFLAGS=-lpthread -g
+CFLAGS=-lpthread -lX11
 ALL=actions.exe tests.exe
 
 all: $(ALL)
