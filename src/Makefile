@@ -1,6 +1,11 @@
 CC=winegcc
+<<<<<<< HEAD
 CFLAGS=-lpthread -g
 ALL=actions.exe tests.exe testffi_main
+=======
+CFLAGS=-lpthread -lX11
+ALL=actions.exe tests.exe
+>>>>>>> 6a8e5ff4541a03ed352303cfb78a39ef1b64c1c8
 
 all: $(ALL)
 
